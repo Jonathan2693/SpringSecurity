@@ -1,6 +1,8 @@
 package com.openbootcamp.ejercicio789.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.openbootcamp.ejercicio789.utils.CustomAccessDeniedHandlerConstants;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -11,34 +13,35 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
-
+	
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response,
-                       AccessDeniedException e) throws IOException, ServletException {
-
-        // You can create your own response here to handle method level access denied reponses..
-        // Follow similar method to the bad credentials handler above.
-        System.out.println("Ejecutando CustomAccessDeniedHandler");
-        response.setStatus(HttpStatus.FORBIDDEN.value());
-        response.setContentType("application/json");
-        Map<String, Object> data = new HashMap<>();
-        data.put("timestamp", new Date());
-        data.put("status",HttpStatus.FORBIDDEN.value());
-        data.put("message", "Access Denied, login again!");
-        data.put("path", request.getRequestURL().toString());
-        data.put("pd", "Have a good day :)");
-
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e) throws IOException, ServletException {
+    	ObjectMapper mapper = new ObjectMapper();
+        response.setStatus(CustomAccessDeniedHandlerConstants.HTTP_STATUS_CODE_VALUE);
+        response.setContentType(CustomAccessDeniedHandlerConstants.APPLICATION_JSON);
         OutputStream out = response.getOutputStream();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(out, data);
+        mapper.writeValue(out, getBodyResponse());
         out.flush();
-
     }
+
+	private Map<String, Object> getBodyResponse() {
+		Map<String, Object> bodyResponse = new HashMap<>();
+        bodyResponse.put(CustomAccessDeniedHandlerConstants.TIMESTAMP, getDate());
+        bodyResponse.put(CustomAccessDeniedHandlerConstants.ALIAS, CustomAccessDeniedHandlerConstants.ALIAS_VALUE);
+        bodyResponse.put(CustomAccessDeniedHandlerConstants.HTTP_STATUS_CODE, CustomAccessDeniedHandlerConstants.HTTP_STATUS_CODE_VALUE);
+        bodyResponse.put(CustomAccessDeniedHandlerConstants.MESSAGE, CustomAccessDeniedHandlerConstants.MESSAGE_VALUE);
+		return bodyResponse;
+	}
+
+	private String getDate() {
+		return new SimpleDateFormat(CustomAccessDeniedHandlerConstants.DATE_FORMAT).format(new Date());
+	}
 
 }

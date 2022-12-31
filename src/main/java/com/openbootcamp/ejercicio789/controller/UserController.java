@@ -6,6 +6,8 @@ import com.openbootcamp.ejercicio789.dto.LoginUser;
 import com.openbootcamp.ejercicio789.entities.User;
 import com.openbootcamp.ejercicio789.dto.UserDto;
 import com.openbootcamp.ejercicio789.service.UserService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +26,7 @@ public class UserController {
     private TokenProvider jwtTokenUtil;
     private UserService userService;
 
+    
     public UserController(AuthenticationManager authenticationManager, TokenProvider jwtTokenUtil, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
@@ -31,7 +34,7 @@ public class UserController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<?> generateToken(@RequestBody LoginUser loginUser) throws AuthenticationException {
+    public ResponseEntity<AuthToken> generateToken(@RequestBody LoginUser loginUser) throws AuthenticationException {
 
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

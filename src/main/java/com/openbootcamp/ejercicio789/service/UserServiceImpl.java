@@ -7,6 +7,7 @@ import com.openbootcamp.ejercicio789.repository.UserRepository;
 import com.openbootcamp.ejercicio789.dto.UserDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private UserRepository userRepository;
 
     @Autowired
+    @Lazy
     private BCryptPasswordEncoder bcryptEncoder;
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
