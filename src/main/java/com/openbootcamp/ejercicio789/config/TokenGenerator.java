@@ -17,7 +17,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-public class TokenProvider implements Serializable {
+public class TokenGenerator implements Serializable {
 
     @Value("${jwt.token.validity}")
     public long TOKEN_VALIDITY;

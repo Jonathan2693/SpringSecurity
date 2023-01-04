@@ -1,6 +1,6 @@
 package com.openbootcamp.ejercicio789.controller;
 
-import com.openbootcamp.ejercicio789.config.TokenProvider;
+import com.openbootcamp.ejercicio789.config.TokenGenerator;
 import com.openbootcamp.ejercicio789.dto.AuthToken;
 import com.openbootcamp.ejercicio789.dto.LoginUser;
 import com.openbootcamp.ejercicio789.entities.User;
@@ -23,17 +23,16 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private AuthenticationManager authenticationManager;
-    private TokenProvider jwtTokenUtil;
+    private TokenGenerator tokenGenerator;
     private UserService userService;
 
-    
-    public UserController(AuthenticationManager authenticationManager, TokenProvider jwtTokenUtil, UserService userService) {
+    public UserController(@Autowired AuthenticationManager authenticationManager, @Autowired TokenGenerator tokenGenerator,  @Autowired UserService userService) {
         this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
+        this.tokenGenerator = tokenGenerator;
         this.userService = userService;
     }
 
-    @PostMapping("/authenticate")
+    @PostMapping("/login")
     public ResponseEntity<AuthToken> generateToken(@RequestBody LoginUser loginUser) throws AuthenticationException {
 
         final Authentication authentication = authenticationManager.authenticate(
@@ -43,15 +42,11 @@ public class UserController {
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        final String token = jwtTokenUtil.generateToken(authentication);
-        return ResponseEntity.ok(new AuthToken(token));
+        return ResponseEntity.ok(new AuthToken(tokenGenerator.generateToken(authentication)));
     }
 
-    // @RequestMapping(value="/register", method = RequestMethod.POST)
     @PostMapping("/register")
     public User saveUser(@RequestBody UserDto user){
-        // prueba a lanzar excepción customizada
-        // throw new EmailAlreadyExistsException("Email ocupado");
         return userService.save(user);
     }
 
